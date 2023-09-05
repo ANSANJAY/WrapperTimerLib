@@ -137,3 +137,43 @@ void resume_timer(Timer_t *timer) {
     // Set the state of the timer to resumed
     timer_set_state(timer, TIMER_RESUMED);
 }
+// Function to delete a timer
+void delete_timer(Timer_t *timer) {
+    timer_delete(timer->posix_timer);
+    free(timer);
+    timer = NULL;
+}
+
+// Function to cancel a timer
+void cancel_timer(Timer_t *timer) {
+    timer->ts.it_value.tv_sec = 0;
+    timer->ts.it_value.tv_nsec = 0;
+    timer->ts.it_interval.tv_sec = 0;
+    timer->ts.it_interval.tv_nsec = 0;
+    timer_settime(timer->posix_timer, 0, &timer->ts, NULL);
+    timer_set_state(timer, TIMER_CANCELLED);
+}
+
+// Function to get remaining time in milliseconds
+unsigned long timer_get_time_remaining_in_mill_sec(Timer_t *timer) {
+    struct itimerspec remaining_time;
+    memset(&remaining_time, 0, sizeof(struct itimerspec));
+    timer_gettime(timer->posix_timer, &remaining_time);
+    return timespec_to_millisec(&remaining_time.it_value);
+}
+
+// Function to print the timer state
+void print_timer_state(Timer_t *timer) {
+    printf("Timer State: ");
+    switch(timer->timer_state) {
+        case TIMER_INIT: printf("INIT\n"); break;
+        case TIMER_DELETED: printf("DELETED\n"); break;
+        case TIMER_PAUSED: printf("PAUSED\n"); break;
+        case TIMER_CANCELLED: printf("CANCELLED\n"); break;
+        case TIMER_RESUMED: printf("RESUMED\n"); break;
+        case TIMER_RUNNING: printf("RUNNING\n"); break;
+        default: printf("UNKNOWN\n"); break;
+    }
+}
+
+
