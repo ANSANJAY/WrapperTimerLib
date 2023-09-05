@@ -7,7 +7,7 @@ In this session, we learn about a test program for testing our custom wrapper ti
 
 ## Test Program Structure 🏗️
 ### Initial Setup 🛠️
-- **File Name**: `timely_test.c`
+- **File Name**: `timerlib_test.c`
 - **Purpose**: To test the custom timer API functionality.
 - **Functionality**: 
   - Define random user data.
@@ -26,7 +26,77 @@ In this session, we learn about a test program for testing our custom wrapper ti
 - Use the `startTimer` API to start the timer. 
 - Expectation: Timer fires every 1000ms and invokes the user-defined callback.
 
+-----
+```C
+// Function to get the remaining time on a timer in milliseconds
+unsigned long timer_get_time_remaining_in_mill_sec(Timer_t *timer) {
+    struct itimerspec remaining_time;
+    memset(&remaining_time, 0, sizeof(struct itimerspec));
+    
+    timer_gettime(timer->posix_timer, &remaining_time);
+    
+    return timespec_to_millisec(&remaining_time.it_value);
+}
+```
+----
+
+# Detailed Notes  on Time Remaining API in Timer Library 📝
+
+## Introduction 🚀
+- The notes focuses on an API that returns the `time remaining for a timer to expire in milliseconds`.
+  
+## Conceptual Overview 🤔
+- If you start a timer with an expiration time of 10 seconds, and check at 6 seconds, it should show 4 seconds remaining.
+- Example: `time d = 0, expiration time = 10s`
+  - At `time T = 6`, 4000 milliseconds should be returned.
+  
+## Implementation Details 🛠
+  
+### File and API 
+- Working in the file `timer_lib.c` to complete our library.
+  
+### Linux Built-In API 🐧
+- Linux provides an in-built API to find the time left for a timer to expire.
+  
+### Variables and Types 📊
+- `itimerspec` variable is used to capture the time.
+  
+### Method Signature 📜
+- Linux API: `timer_gettime(timer, &itimerspec_variable);`
+  - First Argument: The timer
+  - Second Argument: The output parameter (`itimerspec`) where the result will be stored.
+
+### API Logic 👨‍💻
+- The API will store the number of seconds and nanoseconds remaining in the `itimerspec` variable.
+- A convenience function converts these values to milliseconds.
+
+
+## Key Takeaways 🎯
+- The API is crucial for determining how much time is left for a timer to expire.
+- Works with the Linux in-built API and `itimerspec` data type.
+- API implementation is straightforward; just calls the built-in Linux function and converts the time to milliseconds.
+
 ---
+
+# Interview Questions and Answers about Time Remaining API 🤓
+
+### Q1: What does the Time Remaining API do? 🤔
+**A1:** The Time Remaining API returns the time remaining for a timer to expire. It returns this time in milliseconds.
+
+### Q2: How is the time remaining calculated? 🛠
+**A2:** The Linux operating system provides an inbuilt API called `timer_gettime` which takes the timer and an `itimerspec` variable as arguments. The remaining time in seconds and nanoseconds is stored in this `itimerspec` variable, which is then converted to milliseconds for output.
+
+### Q3: What is the significance of the `itimerspec` variable in this implementation? 📊
+**A3:** The `itimerspec` variable captures the number of seconds and nanoseconds remaining for the timer to expire. It serves as the output parameter where the result from the Linux API is stored.
+
+### Q4: Can you explain the method signature of the Linux in-built API used? 📜
+**A4:** Sure, the method signature of the Linux in-built API `timer_gettime` is as follows:
+```c
+timer_gettime(timer, &itimerspec_variable);
+```
+- The first argument is the timer you are querying.
+- The second argument is the `itimerspec` variable where the remaining time will be stored.
+
 
 ## Extended Functionality 🎯
 ### Menu-Driven Test Program 📋
@@ -48,10 +118,7 @@ In this session, we learn about a test program for testing our custom wrapper ti
 
 ---
 
-## Upcoming Goals 🥅
-- Implement and test each menu function in the upcoming lectures.
 
----
 
 # Interview Questions & Answers 🤔💡
 
