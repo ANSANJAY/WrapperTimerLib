@@ -73,5 +73,75 @@ In this section, we discuss the design and implementation of a custom timer libr
 **A4**: The `threshold` attribute defines the maximum number of times a periodic timer should fire. This allows developers to set a limit on the number of invocations for a timer, instead of letting it run indefinitely.
 
 ---
+### Questions and Answers for Timer Wrapper Program 🤓
+
+---
+
+#### Question 1: What is the purpose of the `TIMER_STATE_T` enumeration in the program?
+
+**Answer:**
+The `TIMER_STATE_T` enumeration is used to represent the different states a timer can be in. These states include:
+
+- `TIMER_INIT`: Initial state of the timer.
+- `TIMER_DELETED`: State representing that the timer has been deleted.
+- `TIMER_PAUSED`: State indicating that the timer is paused.
+- `TIMER_CANCELLED`: State showing that the timer has been cancelled.
+- `TIMER_RESUMED`: State indicating that the timer has been resumed.
+- `TIMER_RUNNING`: State showing that the timer is currently running.
+
+This helps in better management and understanding of the timer's current status.
+
+---
+
+#### Question 2: Can you explain the role of the `setup_timer` function?
+
+**Answer:**
+The `setup_timer` function serves as the initializer for the `Timer_t` structure. It takes the following arguments:
+
+- `timer_cb`: The callback function that will be invoked when the timer expires.
+- `exp_timer`: The time duration in milliseconds after which the timer will first expire.
+- `sec_exp_timer`: The time duration in milliseconds for subsequent expirations.
+- `threshold`: The maximum number of times the timer should expire. A value of 0 means infinite expirations.
+- `user_arg`: An argument that will be passed to the callback function.
+- `exponential_backoff`: A boolean flag to indicate whether the timer should use exponential backoff.
+
+The function returns a pointer to the initialized `Timer_t` structure.
+
+---
+
+#### Question 3: How is the state of a timer accessed or modified?
+
+**Answer:**
+The state of the timer is accessed or modified using two inline functions:
+
+- `timer_get_current_state(Timer_t *timer)`: This function returns the current state of the timer. It takes a pointer to the `Timer_t` structure as an argument.
+  
+- `timer_set_state(Timer_t *timer, TIMER_STATE_T timer_state)`: This function sets the state of the timer. It takes a pointer to the `Timer_t` structure and the new state as arguments.
+
+These functions encapsulate the state management logic, providing an interface to easily get or set the timer's state.
+
+---
+
+#### Question 4: What does the `resurrect_timer` function do?
+
+**Answer:**
+The `resurrect_timer` function is designed to resume a paused or cancelled timer. The specific implementation details are not provided in the header file, but based on its name and common usage, it is reasonable to assume that it changes the state of the timer to `TIMER_RUNNING` or `TIMER_RESUMED` and resets any necessary timers or counters to ensure the timer starts running again.
+
+---
+
+#### Question 5: How does the program handle time durations and expirations?
+
+**Answer:**
+The program handles time durations and expirations using the following fields in the `Timer_t` structure:
+
+- `exp_timer`: This field holds the time in milliseconds after which the timer will first expire.
+  
+- `sec_exp_timer`: This field holds the time in milliseconds for subsequent timer expirations.
+  
+- `time_remaining`: This field holds the time left for the next expiration when the timer is paused.
+
+These fields allow for flexible configuration of how the timer expires, whether it's just once, multiple times, or after specific intervals.
+
+---
 
 
