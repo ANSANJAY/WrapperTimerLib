@@ -74,6 +74,49 @@ The API initializes a "wrapper timer" with various attributes based on the user'
 5. Create POSIX timer.
 6. Initialize TSA attribute for first expiration.
 
+```C
+// Function to set up and initialize the timer
+Timer_t* setup_timer(
+    void (*timer_cb)(Timer_t*, void *),     // User-defined callback function
+    unsigned long exp_timer,                // Initial expiration time in milliseconds
+    unsigned long sec_exp_timer,            // Subsequent expiration time in milliseconds
+    uint32_t threshold,                     // Maximum number of expirations (0 for infinite)
+    void *user_arg,                         // User argument for callback
+    bool exponential_backoff) {             // Flag for exponential backoff
+
+    // Allocate and initialize Timer_t structure
+    Timer_t *timer = calloc(1, sizeof(Timer_t));
+    timer->user_arg = user_arg;
+    timer->exp_timer = exp_timer;
+    timer->sec_exp_timer = sec_exp_timer;
+    timer->cb = timer_cb;
+    timer->thresdhold = threshold;
+    timer_set_state(timer, TIMER_INIT);
+    timer->exponential_backoff = exponential_backoff;
+    
+    // Sanity check to ensure that callback function is provided
+    assert(timer->cb);
+    
+    struct sigevent evp;
+    memset(&evp, 0, sizeof(struct sigevent));
+    
+    evp.sigev_value.sival_ptr = (void *)(timer);
+    evp.sigev_notify = SIGEV_THREAD;
+    evp.sigev_notify_function = timer_callback_wrapper;
+    
+    // Create the POSIX timer
+    int rc = timer_create (CLOCK_REALTIME, &evp, &timer->posix_timer);
+    assert(rc >= 0);
+    
+    // Fill in the timer specs for initial and subsequent intervals
+    timer_fill_itimerspec(&timer->ts.it_value, timer->exp_timer);
+    timer_fill_itimerspec(&timer->ts.it_interval, timer->sec_exp_timer);
+    
+    timer->exp_back_off_time = 0;
+    return timer;
+}
+
+```
 ---
 
 ## Interview Questions ❓
