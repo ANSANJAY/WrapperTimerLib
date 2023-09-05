@@ -25,9 +25,9 @@ The `WrappedTimer` (notice the capital 'T') is our custom data structure which a
 
 ```c
 typedef struct {
-    timer_t posix_timer; // POSIX Timer
+    Timer_t posix_timer; // POSIX Timer
     // Additional variables for more control
-} WrappedTimer;
+} Timer_t t;
 ```
 
 ## Functionality 🛠️
