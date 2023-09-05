@@ -40,6 +40,26 @@ typedef struct Timer_{
 	TIMER_STATE_T timer_state;  // Current state of the timer
 } Timer_t;
 
+
+
+static inline TIMER_STATE_T timer_get_current_state(Timer_t *timer);
+static inline void timer_set_state(Timer_t *timer, TIMER_STATE_T timer_state);
+void resurrect_timer(Timer_t *timer);
+void restart_timer(Timer_t *timer); // Added
+void reschedule_timer(Timer_t *timer, unsigned long new_exp_timer, unsigned long new_sec_exp_timer); // Added
+
+void start_timer(Timer_t *timer);
+unsigned long timer_get_time_remaining_in_mill_sec(Timer_t *timer);
+void pause_timer(Timer_t *timer);
+void resume_timer(Timer_t *timer);
+void delete_timer(Timer_t **timer);
+void cancel_timer(Timer_t *timer);
+void print_timer_state(Timer_t *timer);
+unsigned long timespec_to_millisec(struct timespec *time);
+void timer_fill_itimerspec(struct timespec *ts, unsigned long msec);
+
+
+
 // Function prototype for setting up the timer
 Timer_t*
 setup_timer(

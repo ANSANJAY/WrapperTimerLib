@@ -137,11 +137,10 @@ void resume_timer(Timer_t *timer) {
     // Set the state of the timer to resumed
     timer_set_state(timer, TIMER_RESUMED);
 }
-// Function to delete a timer
-void delete_timer(Timer_t *timer) {
-    timer_delete(timer->posix_timer);
-    free(timer);
-    timer = NULL;
+void delete_timer(Timer_t **timer) {
+    timer_delete((*timer)->posix_timer);
+    free(*timer);
+    *timer = NULL;
 }
 
 // Function to cancel a timer
@@ -152,14 +151,6 @@ void cancel_timer(Timer_t *timer) {
     timer->ts.it_interval.tv_nsec = 0;
     timer_settime(timer->posix_timer, 0, &timer->ts, NULL);
     timer_set_state(timer, TIMER_CANCELLED);
-}
-
-// Function to get remaining time in milliseconds
-unsigned long timer_get_time_remaining_in_mill_sec(Timer_t *timer) {
-    struct itimerspec remaining_time;
-    memset(&remaining_time, 0, sizeof(struct itimerspec));
-    timer_gettime(timer->posix_timer, &remaining_time);
-    return timespec_to_millisec(&remaining_time.it_value);
 }
 
 // Function to print the timer state

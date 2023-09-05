@@ -38,6 +38,145 @@ unsigned long timer_get_time_remaining_in_mill_sec(Timer_t *timer) {
     return timespec_to_millisec(&remaining_time.it_value);
 }
 ```
+The function `timer_get_time_remaining_in_mill_sec` is designed to get the remaining time for a given timer object (`Timer_t *timer`) in milliseconds.
+
+Here's a breakdown of what each line does:
+
+1. **`struct itimerspec remaining_time;`**: Declares a `struct itimerspec` object named `remaining_time`. The `itimerspec` structure is used in POSIX-compliant systems to specify timers. It typically contains two `timespec` structures: one for the initial time and one for the interval.
+
+2. **`memset(&remaining_time, 0, sizeof(struct itimerspec));`**: Initializes all the fields of `remaining_time` to zero. The `memset` function sets the first `sizeof(struct itimerspec)` bytes of the memory area pointed to by `&remaining_time` to zero.
+
+3. **`timer_gettime(timer->posix_timer, &remaining_time);`**: Calls the `timer_gettime()` function, which fills `remaining_time` with the current setting of the timer pointed to by `timer->posix_timer`.
+
+4. **`return timespec_to_millisec(&remaining_time.it_value);`**: Calls a helper function named `timespec_to_millisec` to convert the remaining time stored in `remaining_time.it_value` to milliseconds and returns this value.
+
+The function ultimately returns the remaining time on the timer in milliseconds.
+----
+Here's an example to illustrate how `timer_gettime()` can be used:
+
+Suppose you have a timer `my_timer` that is set to expire after 10 seconds initially, and then every 5 seconds after that.
+
+The `struct itimerspec` that you might set for this timer would look like:
+
+```c
+struct itimerspec timerSpec;
+timerSpec.it_value.tv_sec = 10;  // 10 seconds
+timerSpec.it_value.tv_nsec = 0;  // 0 nanoseconds
+timerSpec.it_interval.tv_sec = 5;  // 5 seconds
+timerSpec.it_interval.tv_nsec = 0;  // 0 nanoseconds
+```
+
+Now, let's say 4 seconds have passed since the timer was started. If you call `timer_gettime()` at this point to check the remaining time, it should return 6 seconds as the time remaining until the next expiration and 5 seconds as the interval for subsequent expirations.
+
+Here's how you could code this:
+
+```c
+#include <stdio.h>
+#include <time.h>
+#include <string.h>  // for memset
+#include <signal.h>  // for timer_create, etc.
+
+// Function to convert timespec to milliseconds
+unsigned long timespec_to_millisec(struct timespec *ts) {
+    return (ts->tv_sec * 1000) + (ts->tv_nsec / 1000000);
+}
+
+int main() {
+    timer_t my_timer;
+    struct sigevent sevp;
+    struct itimerspec timerSpec, remaining_time;
+
+    memset(&sevp, 0, sizeof(struct sigevent));
+    sevp.sigev_notify = SIGEV_NONE;  // No signal is sent, for demonstration
+
+    // Create a timer
+    if (timer_create(CLOCK_REALTIME, &sevp, &my_timer) == -1) {
+        perror("timer_create");
+        return 1;
+    }
+
+    // Set timer to expire after 10 seconds and then every 5 seconds
+    timerSpec.it_value.tv_sec = 10;
+    timerSpec.it_value.tv_nsec = 0;
+    timerSpec.it_interval.tv_sec = 5;
+    timerSpec.it_interval.tv_nsec = 0;
+
+    if (timer_settime(my_timer, 0, &timerSpec, NULL) == -1) {
+        perror("timer_settime");
+        return 1;
+    }
+
+    // Simulate 4 seconds passing
+    sleep(4);
+
+    // Get the remaining time and interval on the timer
+    if (timer_gettime(my_timer, &remaining_time) == -1) {
+        perror("timer_gettime");
+        return 1;
+    }
+
+    // Output the remaining time and interval
+    printf("Time remaining: %ld seconds\n", remaining_time.it_value.tv_sec);
+    printf("Interval: %ld seconds\n", remaining_time.it_interval.tv_sec);
+
+    // Convert the remaining time to milliseconds and print it
+    unsigned long remaining_millis = timespec_to_millisec(&remaining_time.it_value);
+    printf("Time remaining in milliseconds: %lu\n", remaining_millis);
+
+    return 0;
+}
+```
+
+Output would be something like:
+
+```
+Time remaining: 6 seconds
+Interval: 5 seconds
+Time remaining in milliseconds: 6000
+```
+
+This shows that `timer_gettime()` gives you the remaining time until the next expiration (`it_value`) as well as the interval between expirations (`it_interval`).
+
+
+------------------------
+
+The `timer_gettime()` function is used to fetch the amount of time until the next expiration of a POSIX timer, as well as the reload value of the timer. When called, it populates a `struct itimerspec` variable that is passed as its second argument.
+
+The `struct itimerspec` is defined something like:
+
+```c
+struct itimerspec {
+  struct timespec it_interval;  /* Timer interval */
+  struct timespec it_value;     /* Initial expiration */
+};
+```
+
+Here, `it_interval` specifies the period of the timer, i.e., the time until the timer fires again once it has initially expired. `it_value` specifies the time until the next expiration of the timer from the current time.
+
+Both `it_interval` and `it_value` are of type `struct timespec`, which is defined as:
+
+```c
+struct timespec {
+  time_t tv_sec;  /* seconds */
+  long tv_nsec;   /* nanoseconds */
+};
+```
+
+The function is usually called as:
+
+```c
+int timer_gettime(timer_t timerid, struct itimerspec *value);
+```
+
+- `timerid`: The timer identifier.
+- `value`: A pointer to a `struct itimerspec` variable that will hold the current setting of the timer.
+
+After the call, the `it_value` field of the `struct itimerspec` variable will contain the amount of time left until the timer will next expire, and the `it_interval` field will contain the period of the timer (or zero if the timer is a one-shot).
+
+The function returns 0 on success, and `-1` on failure, setting `errno` to indicate the error.
+
+So, in the context of your program, `timer_gettime(timer->posix_timer, &remaining_time);` will populate the `remaining_time` `struct` with the remaining time until the next timer expiration (`remaining_time.it_value`) and the period of the timer (`remaining_time.it_interval`).
+
 ----
 
 # Detailed Notes  on Time Remaining API in Timer Library 📝
