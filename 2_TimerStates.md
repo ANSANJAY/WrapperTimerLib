@@ -1,16 +1,16 @@
 
 # Detailed Notes on Timer Data Structure and Timer States 📝
 
-## Timer Data Structure: `ReprTimer` 🕒
+## Timer Data Structure: `WrappedTimer` 🕒
 
 ### Introduction 🎯
-- `ReprTimer` is a wrapper around the POSIX timer data structure.
+- `WrappedTimer` is a wrapper around the POSIX timer data structure.
 - Aimed at implementing timers in a comprehensive manner.
 
 ### Member Attributes 🧱
 
 #### Static Attributes 👇
-- **POSIX Timer**: The core time-tracking unit in the `ReprTimer`.
+- **POSIX Timer**: The core time-tracking unit in the `WrappedTimer`.
 - **Callback Function**: Invoked when the timer fires.
 - **User Arguments**: Custom arguments that get passed to the callback function.
 - **Expiration Time Interval**: Milliseconds until the timer first expires.
@@ -58,26 +58,25 @@
 
 # Interview Questions and Answers ❓💡
 
-## Q1: Explain the purpose of the `ReprTimer` data structure. 
+## Q1: Explain the purpose of the `WrappedTimer` data structure. 
 ### A1: 
-The `ReprTimer` is a wrapper around the POSIX timer, designed to provide an interface for creating and managing timers. It includes both static and dynamic attributes, making it a flexible solution for various timer requirements.
+The `WrappedTimer` is a wrapper around the POSIX timer, designed to provide an interface for creating and managing timers. It includes both static and dynamic attributes, making it a flexible solution for various timer requirements.
 
-## Q2: Describe the difference between static and dynamic attributes in the `ReprTimer`.
+## Q2: Describe the difference between static and dynamic attributes in the `WrappedTimer`.
 ### A2: 
 Static attributes, such as the POSIX timer, user arguments, and expiration times, are generally set once and remain unchanged. Dynamic attributes, like the time remaining and invocation counter, change during the timer's lifecycle.
 
 ## Q3: What are the possible states a timer can be in?
 ### A3: 
-The possible states include Timer Init, Timer Running, Timer Cancel, Timer Pause, Timer Resume, and Timer Delete. Each state represents a specific phase in the timer's lifecycle.
+The possible states include Timer Init, Timer Running, Timer Cancel, Timer Pause, Timer Resume, and Timer Delete. Each state Wrappedesents a specific phase in the timer's lifecycle.
 
 ## Q4: How does the Timer state machine work? 
 ### A4: 
 The Timer can transition between various states based on API calls and user interactions. For example, a timer can move from an Init state to a Running state when `setTime` is invoked. It can also transition to a Deleted state from any other state, rendering it unusable thereafter.
 
-## Q5: Explain the significance of the Threshold attribute in `ReprTimer`.
+## Q5: Explain the significance of the Threshold attribute in `WrappedTimer`.
 ### A5: 
 The Threshold attribute sets the maximum number of times a periodic timer can fire. It provides control over the timer's behavior, ensuring it doesn't run indefinitely. 
 
 ---
 
-These notes should give you a comprehensive understanding of timers, their attributes, and states. Good luck with your interviews! 🍀
