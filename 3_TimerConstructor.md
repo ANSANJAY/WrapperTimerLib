@@ -30,6 +30,34 @@ The state machine for timers can transition through multiple states based on the
 
 ---
 
+The `setup_timer` function is designed to simplify the process of creating and initializing a timer in a POSIX-based system. Below is a breakdown of why this function is structured the way it is:
+
+### Parameters:
+
+- **`TimerCallback callback`**: This is a user-defined function that will be called when the timer expires. The function has flexibility, as it doesn't force the user to follow a pre-determined function signature for callbacks.
+
+- **`uint32_t initial_time`**: This is the initial time delay (in milliseconds) after which the timer will expire for the first time. It allows for fine-grained control over when the timer actually kicks off.
+
+- **`uint32_t interval_time`**: This is the time interval (also in milliseconds) at which the timer will expire repeatedly after the initial expiration. It offers the ability to make the timer recurring at a specific interval.
+
+- **`int threshold`**: This sets a limit on the number of times the timer will call the callback function. It's useful for situations where you don't want a timer to run indefinitely.
+
+- **`void *user_data`**: This is a pointer to user-defined data that will be passed as an argument to the callback function. This offers greater flexibility, as you can pass any type of data to your callback.
+
+- **`bool exponential_backoff`**: This is a flag to indicate whether the timer will use an exponential backoff strategy for the intervals. If set to true, the time interval between subsequent timer expirations will double, which is often useful in network-related tasks for reducing congestion or load on a resource.
+
+### Logic:
+
+- **Initializes a new timer**: It sets up a new timer object and allocates resources for it.
+
+- **Sets the initial time delay and time interval**: These parameters (in milliseconds) allow you to control how and when the timer will expire.
+
+- **Optionally adds exponential backoff**: If required, the timer will use an exponential backoff strategy for its intervals.
+
+- **Takes a user-defined callback function and custom arguments**: The function is flexible, allowing you to define your own logic to execute when the timer expires, along with any custom data that this logic may require.
+
+By wrapping all these features and logic into a single `setup_timer` function, it makes it much easier to work with POSIX timers. It abstracts away the underlying complexity involved in setting up, managing, and tearing down timers, providing a user-friendly API.
+
 ## Creating a Timer ⏲️
 
 When you create a timer using the `timer_create` API, it is initially in the Timer Init state.
