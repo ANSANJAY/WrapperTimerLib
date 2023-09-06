@@ -140,7 +140,7 @@ MIT License. Check out `LICENSE.md` for more details.
 
 Created and maintained by Anamika.
 
-\:tada: \*\*Happy Coding!\*\* \:tada:
 
-This should correctly render all the Markdown and emojis on GitHub!
+
+
 
