@@ -138,7 +138,7 @@ MIT License. Check out `LICENSE.md` for more details.
 
 ## \:man\_technologist: Author
 
-Created and maintained by [Your Name]. Reach out at [Your Email] with any questions.
+Created and maintained by Anamika.
 
 \:tada: \*\*Happy Coding!\*\* \:tada:
 
