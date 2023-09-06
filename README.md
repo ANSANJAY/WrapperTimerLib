@@ -1,4 +1,3 @@
-Certainly! Here's the Markdown syntax for your README.md file that should render correctly on GitHub:
 
 # \:timer\_clock\: TimerLib: A POSIX Timer Library in C
 
