@@ -53,7 +53,34 @@ In this section, we discuss the design and implementation of a custom timer libr
 - `invocation_count`: Number of times the timer has invoked the callback function
 
 ---
+The Timer_t structure we've designed serves as a wrapper around the basic POSIX `timer_t` structure. It enriches the timer functionality by adding several layers of abstraction and utility. Here's how it differs from a plain POSIX `timer_t`:
 
+### Added Features in Wrapped Timer (`Timer_t`):
+
+1. **User Arguments (`user_arg`)**: Provides the ability to pass custom arguments to the timer's callback function. This is typically not straightforward in POSIX.
+
+2. **Initial and Subsequent Expiration (`exp_timer` and `sec_exp_timer`)**: Offers fine-grained control over the first and subsequent timer expirations, making it easier to create recurring timers with different initial and subsequent delays.
+
+3. **Threshold (`thresdhold`)**: Allows you to set a limit on how many times the timer callback will be invoked. POSIX timers don't inherently support this feature.
+
+4. **Callback (`cb`)**: Provides a clean interface for setting a callback function to be invoked when the timer expires. While POSIX allows this, it usually requires a more complex setup involving signal handling.
+
+5. **Exponential Backoff (`exponential_backoff`)**: Adds support for exponential backoff timers, which is not a built-in feature in POSIX timers.
+
+6. **Time Remaining (`time_remaining`)**: This field keeps track of the remaining time when the timer is paused, simplifying the task of resuming the timer later.
+
+7. **Invocation Counter (`invocation_counter`)**: A counter to keep track of how many times the timer has been invoked, which can be useful for debugging or for actions that should occur only after a certain number of invocations.
+
+8. **Timer State (`timer_state`)**: Manages the state of the timer (`INIT`, `RUNNING`, `PAUSED`, etc.), which you would otherwise need to handle manually when using POSIX timers.
+
+### Common Features:
+
+1. **POSIX Timer (`posix_timer`)**: The underlying POSIX timer object is still part of the structure, allowing for direct interaction with the operating system's timing mechanisms.
+
+2. **Interval Timer Specification (`ts`)**: This POSIX `itimerspec` structure allows you to set the initial delay and interval for timer expirations, just like you would with a plain POSIX timer.
+
+In summary, your wrapped `Timer_t` structure extends the basic functionality provided by POSIX `timer_t`, making it more flexible, easier to manage, and better suited for a wider variety of tasks.
+---
 ## Interview Questions :question:
 
 ### Q1: What is the motivation behind designing a custom timer library?
