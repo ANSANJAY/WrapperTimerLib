@@ -1,31 +1,6 @@
 
 # Detailed Notes on Timer Data Structure and Timer States 📝
 
-## Timer Data Structure: `WrappedTimer` 🕒
-
-### Introduction 🎯
-- `WrappedTimer` is a wrapper around the POSIX timer data structure.
-- Aimed at implementing timers in a comprehensive manner.
-
-### Member Attributes 🧱
-
-#### Static Attributes 👇
-- **POSIX Timer**: The core time-tracking unit in the `WrappedTimer`.
-- **Callback Function**: Invoked when the timer fires.
-- **User Arguments**: Custom arguments that get passed to the callback function.
-- **Expiration Time Interval**: Milliseconds until the timer first expires.
-- **Secondary Expiration Time**: Relevant only for periodic timers. Milliseconds for subsequent expirations.
-- **Threshold**: Maximum number of times the timer will fire.
-- **Is Exponential Backoff**: A boolean flag to track if the timer employs exponential backoff.
-
-#### Dynamic Attributes 🔄
-- **Time Remaining**: Time left for the timer to expire when paused.
-- **Invocation Counter**: How many times the timer has fired.
-- **Current Expiration Time**: Expiration time passed to `setTime`.
-- **Exponential Backoff Time**: If the timer is of exponential backoff nature.
-- **Timer State**: The current state of the timer (Running, Paused, etc.).
-
----
 
 ## Timer States 🔄
 

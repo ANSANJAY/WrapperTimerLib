@@ -41,16 +41,32 @@ In this section, we discuss the design and implementation of a custom timer libr
 } Timer_t;
 ```
 
-#### Attributes Explanation :clipboard:
+## Timer Data Structure: `WrappedTimer` 🕒
 
-- `posix_timer`: POSIX timer at the core
-- `user_arguments`: Arguments to pass to the callback function
-- `expiration_time` & `secondary_time`: Expiration time in milliseconds
-- `threshold`: Maximum number of invocations
-- `callback`: Function to call upon timer expiration
-- `is_exponential`: Whether the timer is of exponential backoff nature
-- `time_remaining`: Time remaining when the timer is paused
-- `invocation_count`: Number of times the timer has invoked the callback function
+### Introduction 🎯
+- `WrappedTimer` is a wrapper around the POSIX timer data structure.
+- Aimed at implementing timers in a comprehensive manner.
+
+### Member Attributes 🧱
+
+#### Static Attributes 👇
+- **POSIX Timer**: The core time-tracking unit in the `WrappedTimer`.
+- **Callback Function**: Invoked when the timer fires.
+- **User Arguments**: Custom arguments that get passed to the callback function.
+- **Expiration Time Interval**: Milliseconds until the timer first expires.
+- **Secondary Expiration Time**: Relevant only for periodic timers. Milliseconds for subsequent expirations.
+- **Threshold**: Maximum number of times the timer will fire.
+- **Is Exponential Backoff**: A boolean flag to track if the timer employs exponential backoff.
+
+#### Dynamic Attributes 🔄
+- **Time Remaining**: Time left for the timer to expire when paused.
+- **Invocation Counter**: How many times the timer has fired.
+- **Current Expiration Time**: Expiration time passed to `setTime`.
+- **Exponential Backoff Time**: If the timer is of exponential backoff nature.
+- **Timer State**: The current state of the timer (Running, Paused, etc.).
+
+---
+
 
 ---
 The Timer_t structure we've designed serves as a wrapper around the basic POSIX `timer_t` structure. It enriches the timer functionality by adding several layers of abstraction and utility. Here's how it differs from a plain POSIX `timer_t`:
